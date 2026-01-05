@@ -1,0 +1,7 @@
+# ML Inference Service Dependencies - Standalone Demo Version
+# Minimal dependencies that work with Python 3.14
+
+# Web framework only
+fastapi
+uvicorn
+python-multipart

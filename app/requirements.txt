@@ -1,0 +1,15 @@
+# ML Inference Service Dependencies
+# Using versions with pre-built Windows wheels to avoid compilation
+
+# Web framework - older stable versions with pre-built wheels
+fastapi==0.95.2
+uvicorn==0.22.0
+pydantic==1.10.7
+
+# ML libraries - using versions with pre-built wheels
+scikit-learn==1.2.2
+numpy==1.24.3
+joblib==1.2.0
+
+# Utilities
+python-multipart==0.0.6

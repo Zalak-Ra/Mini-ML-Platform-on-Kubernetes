@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: ml-platform-limits
+  namespace: ml-platform
+spec:
+  limits:
+  # Container-level limits
+  - type: Container
+    # Default limits (applied if not specified in pod spec)
+    default:
+      cpu: "200m"
+      memory: "256Mi"
+    
+    # Default requests (applied if not specified in pod spec)
+    defaultRequest:
+      cpu: "50m"
+      memory: "64Mi"
+    
+    # Minimum resources a container can request
+    min:
+      cpu: "10m"
+      memory: "32Mi"
+    
+    # Maximum resources a container can request
+    max:
+      cpu: "1"
+      memory: "1Gi"
+  
+  # Pod-level limits (sum of all containers in pod)
+  - type: Pod
+    max:
+      cpu: "2"
+      memory: "2Gi"
+    min:
+      cpu: "10m"
+      memory: "32Mi"
+  
+  # PersistentVolumeClaim limits
+  - type: PersistentVolumeClaim
+    max:
+      storage: "5Gi"
+    min:
+      storage: "1Gi"

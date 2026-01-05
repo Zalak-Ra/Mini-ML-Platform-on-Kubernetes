@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: ml-platform-quota
+  namespace: ml-platform
+spec:
+  hard:
+    # Limit total number of pods in namespace
+    pods: "10"
+    
+    # Limit total CPU resources
+    requests.cpu: "2"      # Total CPU requests across all pods
+    limits.cpu: "4"        # Total CPU limits across all pods
+    
+    # Limit total memory resources
+    requests.memory: "2Gi" # Total memory requests across all pods
+    limits.memory: "4Gi"   # Total memory limits across all pods
+    
+    # Limit total storage
+    requests.storage: "10Gi"
+    
+    # Limit number of services
+    services: "5"
+    
+    # Limit number of load balancers
+    services.loadbalancers: "0"  # No external load balancers allowed
+    
+    # Limit number of node ports
+    services.nodeports: "0"      # No node ports allowed

@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-inference
+  namespace: ml-platform
+  labels:
+    app: ml-inference
+    version: v1
+spec:
+  # High availability: 3 replicas
+  replicas: 3
+  
+  # Rolling update strategy for zero-downtime deployments
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1        # Allow 1 extra pod during update (total: 4 pods)
+      maxUnavailable: 0  # Never have fewer than 3 pods running
+  
+  selector:
+    matchLabels:
+      app: ml-inference
+  
+  template:
+    metadata:
+      labels:
+        app: ml-inference
+        version: v1
+      annotations:
+        # Prometheus scraping annotations (if using Prometheus)
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    
+    spec:
+      # Security context for the pod
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      
+      containers:
+      - name: ml-inference
+        image: ml-inference:latest
+        imagePullPolicy: IfNotPresent
+        
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        
+        # Resource requests and limits
+        # Requests: Guaranteed resources for scheduling
+        # Limits: Maximum resources (enforced by cgroups)
+        resources:
+          requests:
+            cpu: "100m"      # 0.1 CPU core
+            memory: "128Mi"  # 128 MiB
+          limits:
+            cpu: "500m"      # 0.5 CPU core
+            memory: "512Mi"  # 512 MiB
+        
+        # Liveness probe: Restart pod if unhealthy
+        # Checks if the application is alive
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30  # Wait 30s after container starts
+          periodSeconds: 10        # Check every 10s
+          timeoutSeconds: 5        # Timeout after 5s
+          failureThreshold: 3      # Restart after 3 consecutive failures
+          successThreshold: 1      # Consider healthy after 1 success
+        
+        # Readiness probe: Remove from service if not ready
+        # Checks if the application can serve traffic
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8000
+          initialDelaySeconds: 10  # Wait 10s after container starts
+          periodSeconds: 5         # Check every 5s
+          timeoutSeconds: 3        # Timeout after 3s
+          failureThreshold: 3      # Mark unready after 3 consecutive failures
+          successThreshold: 1      # Mark ready after 1 success
+        
+        # Environment variables
+        env:
+        - name: PORT
+          value: "8000"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        - name: LOG_LEVEL
+          value: "INFO"
+        
+        # Security context for the container
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+            - ALL
+      
+      # Restart policy
+      restartPolicy: Always
+      
+      # DNS policy
+      dnsPolicy: ClusterFirst
+      
+      # Termination grace period
+      terminationGracePeriodSeconds: 30
