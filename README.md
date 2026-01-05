@@ -8,22 +8,22 @@ This platform implements a stateless ML inference service deployed on Kubernetes
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Kubernetes Cluster                        │
+│                    Kubernetes Cluster                       │
 │  ┌───────────────────────────────────────────────────────┐  │
-│  │              ml-platform Namespace                     │  │
-│  │                                                         │  │
+│  │              ml-platform Namespace                    │  │
+│  │                                                       │  │
 │  │  ┌─────────────────────────────────────────────────┐  │  │
-│  │  │         Service (ClusterIP)                      │  │  │
-│  │  │         ml-inference:80                          │  │  │
+│  │  │         Service (ClusterIP)                     │  │  │
+│  │  │         ml-inference:80                         │  │  │
 │  │  └──────────────┬──────────────────────────────────┘  │  │
-│  │                 │ Load Balancing                       │  │
+│  │                 │ Load Balancing                      │  │
 │  │        ┌────────┼────────┬────────────┐               │  │
 │  │        ▼        ▼        ▼            ▼               │  │
-│  │    ┌─────┐  ┌─────┐  ┌─────┐                         │  │
+│  │    ┌─────┐  ┌─────┐  ┌─────┐                          │  │
 │  │    │Pod 1│  │Pod 2│  │Pod 3│  Deployment              │  │
 │  │    │8000 │  │8000 │  │8000 │  (3 replicas)            │  │
-│  │    └─────┘  └─────┘  └─────┘                         │  │
-│  │                                                         │  │
+│  │    └─────┘  └─────┘  └─────┘                          │  │
+│  │                                                       │  │
 │  │    Resource Quota: 2 CPU, 4Gi Memory                  │  │
 │  │    LimitRange: 10m-1 CPU, 32Mi-1Gi per container      │  │
 │  └───────────────────────────────────────────────────────┘  │
